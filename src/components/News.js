@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import NewsItem from "./NewsItem";
+import Spinner from "./Spinner";
 
 export default class news extends Component {
   constructor() {
@@ -14,24 +15,31 @@ export default class news extends Component {
 
   async componentDidMount() {
     console.log("this componentdidmount");
-    let url =
-      "https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=2d2bf652983f47fba4d1ec0385faba4f&page=1&pageSize=20";
+    let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=2d2bf652983f47fba4d1ec0385faba4f&page=1&pageSize=${this.state.pageSize}`;
+    this.setState({ loading: true });
     let data = await fetch(url);
     let parsedData = await data.json();
     console.log(parsedData);
     this.setState({
       articles: parsedData.articles,
       totalResults: parsedData.totalResults,
+      loading: false,
     });
     console.log("1");
   }
 
   handleNextClick = async () => {
-    if (this.state.page + 1 < Math.ceil(this.state.totalResults / 20)) {
+    if (
+      !(
+        this.state.page + 1 >
+        Math.ceil(this.state.totalResults / this.props.pageSize)
+      )
+    ) {
       console.log("next");
       let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=2d2bf652983f47fba4d1ec0385faba4f&page=${
         this.state.page + 1
-      }&pageSize=20`;
+      }&pageSize=${this.props.pageSize}`;
+      this.setState({ loading: true });
       let data = await fetch(url);
       let parsedData = await data.json();
       console.log(parsedData);
@@ -39,6 +47,7 @@ export default class news extends Component {
       this.setState({
         page: this.state.page + 1,
         articles: parsedData.articles,
+        loading: false,
       });
     }
   };
@@ -47,7 +56,8 @@ export default class news extends Component {
     console.log("prev");
     let url = `https://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=2d2bf652983f47fba4d1ec0385faba4f&page=${
       this.state.page - 1
-    }&pageSize=20`;
+    }&pageSize=${this.props.pageSize}`;
+    this.setState({ loading: true });
     let data = await fetch(url);
     let parsedData = await data.json();
     console.log(parsedData);
@@ -55,6 +65,7 @@ export default class news extends Component {
     this.setState({
       page: this.state.page - 1,
       articles: parsedData.articles,
+      loading: false,
     });
   };
 
@@ -63,28 +74,30 @@ export default class news extends Component {
     return (
       <div>
         <div className="container my-3">
-          <h2> NewsApp </h2>
+          <h2 className="text-center"> NewsApp </h2>
+          {this.state.loading && <Spinner />}
           <div className="row">
-            {this.state.articles.map((element) => {
-              return (
-                <div className="col-md-2 mx-3 my-3" key={element.url}>
-                  <NewsItem
-                    title={element.title.slice(0, 40)}
-                    description={
-                      element.description === null
-                        ? element.description
-                        : element.description.slice(0, 80)
-                    }
-                    imageUrl={
-                      element.urlToImage
-                        ? element.urlToImage
-                        : "https://i-invdn-com.investing.com/news/SP500StandardandPoors500Index_800x533_L_1657544297.jpg"
-                    }
-                    newsUrl={element.url}
-                  />
-                </div>
-              );
-            })}
+            {!this.state.loading &&
+              this.state.articles.map((element) => {
+                return (
+                  <div className="col-md-2 mx-3 my-3" key={element.url}>
+                    <NewsItem
+                      title={element.title.slice(0, 40)}
+                      description={
+                        element.description === null
+                          ? element.description
+                          : element.description.slice(0, 80)
+                      }
+                      imageUrl={
+                        element.urlToImage
+                          ? element.urlToImage
+                          : "https://i-invdn-com.investing.com/news/SP500StandardandPoors500Index_800x533_L_1657544297.jpg"
+                      }
+                      newsUrl={element.url}
+                    />
+                  </div>
+                );
+              })}
           </div>
         </div>
         <div className="container d-flex justify-content-between">
@@ -97,6 +110,10 @@ export default class news extends Component {
             &larr; Previous
           </button>
           <button
+            disabled={
+              this.state.page + 1 >
+              Math.ceil(this.state.totalResults / this.props.pageSize)
+            }
             type="button"
             className="btn btn-dark"
             onClick={this.handleNextClick}
