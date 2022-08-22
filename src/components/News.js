@@ -28,7 +28,7 @@ export default class news extends Component {
 
   async componentDidMount() {
     console.log("this componentdidmount");
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=2d2bf652983f47fba4d1ec0385faba4f&page=1&pageSize=${this.state.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=2d2bf652983f47fba4d1ec0385faba4f&page=1&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let data = await fetch(url);
     let parsedData = await data.json();
@@ -115,6 +115,8 @@ export default class news extends Component {
                           : "https://i-invdn-com.investing.com/news/SP500StandardandPoors500Index_800x533_L_1657544297.jpg"
                       }
                       newsUrl={element.url}
+                      author={element.author}
+                      publishedAt={element.publishedAt}
                     />
                   </div>
                 );
