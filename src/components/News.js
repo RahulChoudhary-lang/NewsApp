@@ -16,14 +16,20 @@ export default class news extends Component {
     category: propTypes.string,
   };
 
-  constructor() {
-    super();
+  convertingUpperCase = (String) => {
+    return String.charAt(0).toUpperCase() + String.slice(1);
+  };
+
+  constructor(props) {
+    super(props);
     console.log("hello this constructor");
     this.state = {
       articles: [],
       loading: false,
       page: 1,
     };
+
+    document.title = `${this.convertingUpperCase(this.props.category)} - News`;
   }
 
   async updateNow() {
@@ -64,7 +70,10 @@ export default class news extends Component {
     return (
       <div>
         <div className="container my-3">
-          <h2 className="text-center"> NewsApp </h2>
+          <h2 className="text-center">
+            NewsApp - Top {this.convertingUpperCase(this.props.category)}{" "}
+            Headlines
+          </h2>
           {this.state.loading && <Spinner />}
           <div className="row">
             {!this.state.loading &&
