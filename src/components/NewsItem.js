@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 export default class NewsItem extends Component {
   render() {
@@ -19,14 +19,14 @@ export default class NewsItem extends Component {
                 {" " + new Date(publishedAt).toGMTString()}
               </small>
             </p>
-            <Link
+            <a
               className="btn btn-primary"
-              to={newsUrl}
-              target="_blank"
               rel="noreferrer"
+              href={newsUrl}
+              target="_blank"
             >
               Read more
-            </Link>
+            </a>
           </div>
         </div>
       </div>
